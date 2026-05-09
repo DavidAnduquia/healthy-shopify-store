@@ -1,9 +1,9 @@
 # Healthy America Webhook Integration
 
-## 🎯 Objetivo
+## Objetivo
 Servicio para recibir webhooks de Shopify (orders/paid) y enviar datos transformados a herramientas de marketing externas.
 
-## 🚀 Setup Rápido
+## Setup Rápido
 
 ### 1. Instalación
 ```bash
@@ -32,7 +32,7 @@ npm run dev
 npm start
 ```
 
-## 📋 Variables de Entorno
+## Variables de Entorno
 
 | Variable | Descripción | Ejemplo |
 |----------|-------------|---------|
@@ -40,7 +40,7 @@ npm start
 | `WEBHOOK_URL` | Endpoint destino para datos transformados | `https://webhook.site/abc123` |
 | `PORT` | Puerto del servidor (opcional) | `3000` |
 
-## 🔧 Endpoints
+## Endpoints
 
 ### POST /webhook/orders/paid
 Recibe webhooks de Shopify cuando un pedido es pagado.
@@ -98,7 +98,7 @@ Endpoint para health checks del servicio.
 }
 ```
 
-## 🔐 Seguridad
+## Seguridad
 
 ### Validación HMAC
 - **Obligatoria:** Todos los webhooks son validados con HMAC SHA-256
@@ -108,7 +108,7 @@ Endpoint para health checks del servicio.
 ### Rate Limiting
 - Implementar si es necesario para producción
 
-## 🔄 Manejo de Errores
+## Manejo de Errores
 
 ### Reintentos Exponenciales
 - **Intento 1:** Inmediato
@@ -121,7 +121,7 @@ Endpoint para health checks del servicio.
 - **Formato:** JSON estructurado
 - **Destino:** Consola y archivo de logs (opcional)
 
-## 🧪 Pruebas Locales
+## Pruebas Locales
 
 ### Con Ngrok
 ```bash
@@ -141,7 +141,7 @@ curl -X POST http://localhost:3000/webhook/orders/paid \
   -d '{"test": true}'
 ```
 
-## 🚀 Deploy
+## Deploy
 
 ### Heroku
 ```bash
@@ -149,14 +149,7 @@ git push heroku main
 heroku config:set SHOPIFY_WEBHOOK_SECRET=tu_secreto
 heroku config:set WEBHOOK_URL=tu_endpoint
 ```
-
-### Vercel
-```bash
-git push vercel main
-vercel env add SHOPIFY_WEBHOOK_SECRET
-vercel env add WEBHOOK_URL
-```
-
+ 
 ## 🔍 Debugging
 
 ### Logs Útiles
@@ -180,7 +173,7 @@ if (DEBUG) {
 }
 ```
 
-## 📊 Monitoreo (Opcional)
+## Monitoreo (Opcional)
 
 ### Métricas Sugeridas
 - **Uptime:** Tiempo que el servicio está activo
@@ -188,7 +181,7 @@ if (DEBUG) {
 - **Errores:** Tasa de error por hora
 - **Latencia:** Tiempo de respuesta del endpoint externo
 
-## 🆘 Soporte
+## Soporte
 
 ### Problemas Comunes
 1. **HMAC verification failed** → Verificar secreto en .env
@@ -198,8 +191,6 @@ if (DEBUG) {
 ### Contacto
 - **Issues:** Crear issue en GitHub
 - **Emergencias:** Email del equipo de desarrollo
-
----
 
 **Versión:** 1.0.0  
 **Última actualización:** 9 de mayo de 2024
