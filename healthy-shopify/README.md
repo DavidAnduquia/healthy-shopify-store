@@ -20,15 +20,63 @@ platform-healthy/
 │   │   └── facets.liquid          # Filtros responsivos
 │   ├── assets/                     # CSS y JS personalizados
 │   └── config/                     # Configuración del tema
-├── healthy-america-webhook/         # Servicio webhook (Reto 3)
+├── healthy-america-webhook/         # Servicio webhook (Reto 3 - Incompleto)
 │   ├── server.js                   # Servidor Node.js
 │   ├── package.json                # Dependencias
 │   ├── README.md                   # Documentación
 │   └── .env.example               # Variables de entorno
+├── healthy-shopify/               # Documentación del proyecto
+│   ├── README.md                   # Guía principal
+│   ├── INSTALL.md                  # Instalación de dependencias
+│   └── CLI-COMMANDS.md             # Comandos Shopify CLI
 └── docs/                           # Documentación adicional
-    ├── solucion-reto-1.md          # Auditoría técnica
-    └── clave-ingreso-app-shopify     # Acceso a la app
+    ├── solucion-reto-1.md          # Reto 1: Auditoría técnica
+    └── clave-ingreso-app-shopify     # Acceso a la app Shopify
 ```
+
+## 📋 Estado de los Retos
+
+### ✅ Reto 1: Diagnóstico Técnico
+- **Archivo**: `docs/solucion-reto-1.md`
+- **Estado**: COMPLETO
+- **Contenido**: Auditoría completa de healthyamericadigital.com
+- **Problemas**: Rendimiento, SEO, UX, estructura
+- **Priorización**: Tabla con impacto y esfuerzo estimado
+
+### ✅ Reto 2: Mejoras de Conversión
+- **Proyecto**: `platform-healthy/dawn/`
+- **Estado**: COMPLETO
+- **Opción A**: Barra de progreso de envío gratis
+  - **Archivos**: `snippets/cart-drawer.liquid`, `sections/main-cart-footer.liquid`
+  - **Funcionalidad**: Umbral configurable ($100k Cali, $150k nacional)
+  - **Actualización**: Tiempo real sin recargar página
+  
+- **Opción B**: Sección "Completa tu stack" (cross-sell)
+  - **Archivo**: `sections/complete-stack.liquid`
+  - **Funcionalidad**: Detecta línea actual y muestra productos de otras líneas
+  - **Configuración**: Schema con bloques editables desde customizer
+
+### ⚠️ Reto 3: Integración de API y Automatización
+- **Directorio**: `healthy-america-webhook/`
+- **Estado**: INCOMPLETO (requiere configuración en producción)
+- **Funcionalidad implementada**: 
+  - ✅ Servicio Node.js para webhook orders/paid
+  - ✅ Validación HMAC obligatoria
+  - ✅ Transformación de payload con datos requeridos
+  - ✅ Manejo de errores con reintentos
+  - ✅ Logging estructurado
+  - ✅ Health check endpoint
+  - ⚠️ **Pendiente**: Configuración del secreto real de Shopify
+
+## 🔗 Enlaces Importantes
+
+### Acceso a la Aplicación Shopify
+- **URL**: [docs/clave-ingreso-app-shopify](./docs/clave-ingreso-app-shopify)
+- **Contenido**: Credenciales de acceso al admin de Shopify
+
+### Documentación de Webhook
+- **README**: [healthy-america-webhook/README.md](../healthy-america-webhook/README.md)
+- **Instalación**: [healthy-america-webhook/INSTALL.md](../healthy-america-webhook/INSTALL.md)
 
 ## 🚀 Instalación y Configuración
 
