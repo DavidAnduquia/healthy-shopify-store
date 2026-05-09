@@ -44,16 +44,16 @@ graph TD
 shopify theme dev --store tu-tienda.myshopify.com
 ```
 
-## Estructura de la entrega
+## Estructura de la entrega, Theme usado Dawn
 
 | Carpeta / Archivo | Descripción |
 |-------------------|-------------|
-| `dawn/` | Tema Shopify Dawn personalizado |
-| `dawn/snippets/facets.liquid` | Filtros laterales (Availability, Price estáticos) |
-| `dawn/snippets/cart-drawer.liquid` | Drawer del carrito con lógica de envíos |
-| `dawn/sections/complete-stack.liquid` | Cross-sell entre líneas de producto |
-| `dawn/sections/header.liquid` | Header con menú mobile, nombre de cliente |
-| `dawn/sections/main-cart-footer.liquid` | Footer del carrito principal, envíos + barra |
-| `dawn/sections/main-cart-items.liquid` | Items del carrito con textos en español |
-| `dawn/assets/component-facets.css` | CSS para filtros responsive |
+| `healthy-shopify/` | Tema Shopify Dawn personalizado |
+| `healthy-shopify/snippets/facets.liquid` | Filtros laterales (Availability, Price estáticos) |
+| `healthy-shopify/snippets/cart-drawer.liquid` | Drawer del carrito con lógica de envíos |
+| `healthy-shopify/sections/complete-stack.liquid` | Cross-sell entre líneas de producto |
+| `healthy-shopify/sections/header.liquid` | Header con menú mobile, nombre de cliente |
+| `healthy-shopify/sections/main-cart-footer.liquid` | Footer del carrito principal, envíos + barra |
+| `healthy-shopify/sections/main-cart-items.liquid` | Items del carrito con textos en español |
+| `healthy-shopify/assets/component-facets.css` | CSS para filtros responsive |
 | `docs/` | Documentos Reto 1 y Reto 4 |
