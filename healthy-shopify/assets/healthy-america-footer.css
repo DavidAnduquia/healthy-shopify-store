@@ -1,0 +1,357 @@
+/* ============================================================
+   HEALTHY AMERICA — Footer Custom CSS
+   Basado en: sections/footer.liquid (tema Dawn)
+   Cómo usar: pegar en Shopify Admin → Online Store →
+              Themes → Edit code → Assets →
+              healthy-america-footer.css
+   Luego en theme.liquid antes de </head>:
+   {{ 'healthy-america-footer.css' | asset_url | stylesheet_tag }}
+   ============================================================ */
+
+/* ─── VARIABLES DE MARCA ──────────────────────────────────── */
+:root {
+  --ha-blue:        #0a3d7a;
+  --ha-blue-mid:    #1a6fd4;
+  --ha-blue-light:  #e8f1fb;
+  --ha-blue-soft:   #aac8f0;
+
+  --ha-green:       #0d5c3a;
+  --ha-green-soft:  #8dd6b2;
+
+  --ha-red-mid:     #e33333;
+
+  --ha-white:       #ffffff;
+  --ha-border-dim:  rgba(255, 255, 255, 0.1);
+}
+
+/* ─── CONTENEDOR PRINCIPAL DEL FOOTER ────────────────────── */
+footer.footer,
+.footer {
+  background-color: var(--ha-blue) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  border-top: none !important;
+}
+
+/* ─── HEADINGS DE BLOQUES (Quick links, Info, etc.) ────────── */
+.footer-block__heading,
+.footer-block__heading.inline-richtext {
+  font-family: 'Syne', 'Helvetica Neue', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase !important;
+  color: var(--ha-blue-soft) !important;
+  margin-bottom: 14px !important;
+}
+
+/* ─── LINKS DE LOS MENÚS ──────────────────────────────────── */
+.footer-block__details-content.list-unstyled li a,
+.footer-block__details-content .list-menu__item--link,
+.link.link--text.list-menu__item {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  text-decoration: none !important;
+  transition: color 0.18s ease !important;
+  line-height: 1.5 !important;
+}
+
+.footer-block__details-content.list-unstyled li a:hover,
+.footer-block__details-content .list-menu__item--link:hover,
+.link.link--text.list-menu__item:hover {
+  color: var(--ha-white) !important;
+  text-decoration: none !important;
+}
+
+/* Link activo */
+.list-menu__item--active {
+  color: var(--ha-blue-soft) !important;
+  font-weight: 500 !important;
+}
+
+/* ─── TEXTO DE BLOQUE (brand description, subtext) ─────────── */
+.footer-block__details-content.rte,
+.footer-block__brand-info .rte,
+.footer-block__brand-info p {
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  line-height: 1.7 !important;
+}
+
+/* ─── BRAND HEADLINE ──────────────────────────────────────── */
+.footer-block__brand-info .footer-block__heading.rte {
+  font-family: 'Syne', 'Helvetica Neue', sans-serif !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: var(--ha-white) !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+/* ─── NEWSLETTER ──────────────────────────────────────────── */
+.footer-block__newsletter .footer-block__heading,
+.footer-block--newsletter .footer-block__heading {
+  font-family: 'Syne', 'Helvetica Neue', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase !important;
+  color: var(--ha-blue-soft) !important;
+}
+
+/* Input de email */
+.footer__newsletter .field__input,
+.newsletter-form .field__input {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  color: var(--ha-white) !important;
+  font-size: 13px !important;
+  transition: border-color 0.18s !important;
+}
+
+.footer__newsletter .field__input::placeholder,
+.newsletter-form .field__input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.footer__newsletter .field__input:focus,
+.newsletter-form .field__input:focus {
+  border-color: rgba(170, 200, 240, 0.5) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Label del input */
+.footer__newsletter .field__label,
+.newsletter-form .field__label {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-size: 13px !important;
+}
+
+/* Botón de suscripción (flecha) */
+.newsletter-form__button.field__button {
+  background-color: var(--ha-red-mid) !important;
+  border-radius: 0 8px 8px 0 !important;
+  border: none !important;
+  transition: background-color 0.18s !important;
+}
+
+.newsletter-form__button.field__button:hover {
+  background-color: #c41f1f !important;
+}
+
+.newsletter-form__button svg,
+.newsletter-form__button .svg-wrapper svg {
+  fill: var(--ha-white) !important;
+  stroke: var(--ha-white) !important;
+}
+
+/* Mensaje de éxito */
+.newsletter-form__message--success {
+  color: var(--ha-green-soft) !important;
+}
+
+.newsletter-form__message--success svg {
+  fill: var(--ha-green-soft) !important;
+}
+
+/* Mensaje de error */
+.newsletter-form__message:not(.newsletter-form__message--success) {
+  color: #fca5a5 !important;
+}
+
+/* ─── ÍCONOS SOCIALES ─────────────────────────────────────── */
+.footer__list-social,
+.list-social {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 16px !important;
+}
+
+.list-social__link,
+.footer__list-social .list-social__link {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.18s, border-color 0.18s !important;
+}
+
+.list-social__link:hover {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.list-social__link svg,
+.list-social__link .icon {
+  fill: rgba(255, 255, 255, 0.55) !important;
+  width: 16px !important;
+  height: 16px !important;
+  transition: fill 0.18s !important;
+}
+
+.list-social__link:hover svg,
+.list-social__link:hover .icon {
+  fill: var(--ha-white) !important;
+}
+
+/* ─── SEPARADOR SUPERIOR DEL BOTTOM ──────────────────────── */
+.footer__content-bottom {
+  border-top: 1px solid var(--ha-border-dim) !important;
+  margin-top: 8px !important;
+}
+
+.footer__content-bottom-wrapper {
+  padding-top: 20px !important;
+  padding-bottom: 8px !important;
+}
+
+/* ─── COPYRIGHT ───────────────────────────────────────────── */
+.footer__copyright,
+.footer__copyright.caption {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 11px !important;
+}
+
+.footer__copyright .copyright__content,
+.footer__copyright small {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 11px !important;
+}
+
+.footer__copyright a,
+.copyright__content a {
+  color: rgba(255, 255, 255, 0.35) !important;
+  text-decoration: none !important;
+  transition: color 0.18s !important;
+}
+
+.footer__copyright a:hover,
+.copyright__content a:hover {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* ─── POLÍTICAS ───────────────────────────────────────────── */
+.footer__copyright .policies {
+  display: flex !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 4px 0 0 0 !important;
+}
+
+.footer__copyright .policies a {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 11px !important;
+  text-decoration: none !important;
+  transition: color 0.18s !important;
+}
+
+.footer__copyright .policies a:hover {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* ─── MÉTODOS DE PAGO ─────────────────────────────────────── */
+.footer__payment {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.list-payment {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  list-style: none !important;
+  padding: 0 !important;
+}
+
+.list-payment__item svg,
+.list-payment__item .icon--full-color {
+  opacity: 0.55 !important;
+  transition: opacity 0.18s !important;
+  border-radius: 4px !important;
+}
+
+.list-payment__item:hover svg,
+.list-payment__item:hover .icon--full-color {
+  opacity: 0.85 !important;
+}
+
+/* ─── SELECTOR DE PAÍS / IDIOMA ───────────────────────────── */
+.localization-form .localization-form__select,
+.footer__localization select {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 12px !important;
+}
+
+.localization-form .localization-form__select:focus,
+.footer__localization select:focus {
+  border-color: var(--ha-blue-soft) !important;
+  outline: none !important;
+}
+
+.footer__localization .caption-large,
+.footer__localization h2 {
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+/* ─── FOLLOW ON SHOP BUTTON ───────────────────────────────── */
+.footer__follow-on-shop {
+  margin-top: 16px !important;
+}
+
+.footer__follow-on-shop .shopify-shop-button {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: var(--ha-white) !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  transition: background-color 0.18s !important;
+}
+
+.footer__follow-on-shop .shopify-shop-button:hover {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* ─── GRID DE BLOQUES DEL FOOTER ──────────────────────────── */
+.footer__blocks-wrapper.grid {
+  gap: 32px !important;
+}
+
+/* ─── ANIMACIONES DE ENTRADA ──────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .footer-block,
+  .footer-block--newsletter {
+    animation-duration: 0.5s !important;
+  }
+}
+
+/* ─── RESPONSIVE ──────────────────────────────────────────── */
+@media screen and (max-width: 749px) {
+  .footer__blocks-wrapper.grid {
+    gap: 24px !important;
+  }
+
+  .footer-block__heading,
+  .footer-block__heading.inline-richtext {
+    font-size: 10px !important;
+  }
+
+  .footer__copyright .policies {
+    gap: 10px !important;
+  }
+}

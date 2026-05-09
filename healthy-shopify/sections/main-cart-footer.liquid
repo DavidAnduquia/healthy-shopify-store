@@ -1,0 +1,392 @@
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+  .ha-freeship__bar {
+    width: 100%;
+    height: 10px;
+    background: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .ha-freeship__fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    border-radius: 5px;
+    transition: width 0.35s ease-in-out;
+    position: relative;
+  }
+  .ha-freeship__fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: ha-shimmer 2s infinite;
+  }
+  @keyframes ha-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .ha-shiprates {
+    margin: 0 0 0.5rem;
+    padding: 1.1rem 1.25rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    font-size: 1rem;
+  }
+  .ha-shiprates__title {
+    font-weight: 600;
+    color: #495057;
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .ha-shiprates__title svg { width: 18px; height: 18px; }
+  .ha-shiprates__list { display: flex; flex-direction: column; gap: 0.45rem; }
+  .ha-shiprates__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.85rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  .ha-shiprates__item--tip { background: #fffbe6; border-color: #ffeeba; }
+  .ha-shiprates__name  { color: #495057; }
+  .ha-shiprates__price { font-weight: 600; color: #212529; }
+  .ha-shiprates__price--free { color: #28a745; font-weight: 700; }
+  .ha-shiprates__addr {
+    margin: 0.6rem 0 0;
+    font-size: 0.82rem;
+    color: #868e96;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .ha-shiprates__msg { font-size: 0.9rem; color: #868e96; padding: 0.3rem 0; }
+  .ha-shiprates__err { font-size: 0.9rem; color: #dc3545; padding: 0.3rem 0; }
+  .ha-shiprates__label {
+    display: flex; justify-content: space-between;
+    font-size: 1rem; color: #6c757d; margin-bottom: 0.25rem;
+  }
+{%- endstyle -%}
+
+{% comment %} Bridge: exponer dirección del cliente en la página de carrito {% endcomment %}
+<script>
+  window.__shopifyCartData = window.__shopifyCartData || {};
+  window.__shopifyCartData.loggedIn = {{ customer | json | default: 'null' }} !== null;
+  window.__shopifyCartData.defaultAddress = {%- if customer and customer.default_address -%}
+    {
+      "zip":          {{ customer.default_address.zip            | json }},
+      "city":         {{ customer.default_address.city           | json }},
+      "province":     {{ customer.default_address.province       | json }},
+      "country":      {{ customer.default_address.country        | json }},
+      "address1":     {{ customer.default_address.address1       | json }},
+      "provinceCode": {{ customer.default_address.province_code  | json }}
+    }
+  {%- else -%}
+    null
+  {%- endif -%};
+  window.__shopifyCartData.freeShippingThreshold = {{ settings.free_shipping_threshold | default: 150000 }};
+</script>
+
+<div
+  class="gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %}"
+  id="main-cart-footer"
+  data-id="{{ section.id }}"
+>
+  <div class="page-width">
+    <div class="cart__footer isolate section-{{ section.id }}-padding">
+      {%- if settings.show_cart_note -%}
+        <cart-note class="cart__note field">
+          <label for="Cart-note">{{ 'sections.cart.note' | t }}</label>
+          <textarea class="text-area field__input" name="note" form="cart" id="Cart-note"
+            placeholder="{{ 'sections.cart.note' | t }}">{{ cart.note }}</textarea>
+        </cart-note>
+      {%- endif -%}
+
+      <div class="cart__blocks">
+        {% for block in section.blocks %}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {% render block %}
+
+            {%- when 'subtotal' -%}
+              <div class="js-contents" {{ block.shopify_attributes }}>
+                <div>
+                  {%- if cart.cart_level_discount_applications.size > 0 -%}
+                    <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
+                      {%- for discount in cart.cart_level_discount_applications -%}
+                        <li class="discounts__discount discounts__discount--position">
+                          {{- 'icon-discount.svg' | inline_asset_content -}}
+                          {{ discount.title | escape }}
+                          (-{{ discount.total_allocated_amount | money }})
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                </div>
+
+                <div class="ha-shiprates" id="CartPage-ShipRates">
+                  <p class="ha-shiprates__title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="1" y="3" width="15" height="13"/>
+                      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                      <circle cx="5.5" cy="18.5" r="2.5"/>
+                      <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                    Opciones de envío
+                  </p>
+                  <!--
+                    FIX: ambas barras se ocultan con display:none desde el inicio.
+                    El JS decide cuál mostrar según la ciudad del cliente,
+                    evitando el parpadeo de doble barra al actualizar el carrito.
+                  -->
+                  <div id="CartPage-FreeShip-Cali-Bar" style="display:none;margin-bottom:0.5rem;">
+                    <div class="ha-shiprates__label">
+                      <span>Minimo para envío gratis en Cali · $100.000</span>
+                      <span id="CartPage-FreeShip-Cali-Text">0%</span>
+                    </div>
+                    <div class="ha-freeship__bar">
+                      <div class="ha-freeship__fill" id="CartPage-FreeShip-Cali-Fill" style="width:0%"></div>
+                    </div>
+                  </div>
+                  <div id="CartPage-FreeShip-Nat-Bar" style="display:none;margin-bottom:0.75rem;">
+                    <div class="ha-shiprates__label">
+                      <span>Minimo para envío gratis en todo el país · $150.000</span>
+                      <span id="CartPage-FreeShip-Nat-Text">0%</span>
+                    </div>
+                    <div class="ha-freeship__bar">
+                      <div class="ha-freeship__fill" id="CartPage-FreeShip-Nat-Fill" style="width:0%"></div>
+                    </div>
+                  </div>
+                  <div class="ha-shiprates__list" id="CartPage-ShipRates-List">
+                    <span class="ha-shiprates__msg">Calculando...</span>
+                  </div>
+                  <p class="ha-shiprates__addr" id="CartPage-ShipRates-Addr"></p>
+                </div>
+
+                <div class="totals" role="status">
+                  <h2 class="totals__total">Total estimado</h2>
+                  <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
+                </div>
+
+                <small class="tax-note caption-large rte">
+                  Impuestos, descuentos y costo de envío calculados al finalizar la compra.
+                </small>
+              </div>
+
+            {%- else -%}
+              <div class="cart__ctas" {{ block.shopify_attributes }}>
+                <button type="submit" id="checkout" class="cart__checkout-button button"
+                    name="checkout" {% if cart == empty %}disabled{% endif %} form="cart">
+                    Pagar
+                  </button>
+              </div>
+              {%- if additional_checkout_buttons -%}
+                <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+                  {{ content_for_additional_checkout_buttons }}
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        {% endfor %}
+        <div id="cart-errors"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /*
+    Shopify devuelve total_price en CENTAVOS en /cart.js
+    Ej: $97.000 COP → total_price = 9700000
+    Por eso los umbrales y tarifas van × 100
+  */
+  var CALI_FREE   = 10000000;   // $100.000 COP en centavos
+  var NAT_FREE    = 15000000;   // $150.000 COP en centavos
+  var CALI_RATE   =  1500000;   //  $15.000 COP en centavos
+  var NAT_RATE    =  1900000;   //  $19.000 COP en centavos
+
+  var _fetching   = false;
+  var _lastFetch  = 0;
+  var DEBOUNCE_MS = 1200;
+
+  /* La dirección se inyecta directamente desde Liquid — sin depender de window.__shopifyCartData */
+  var ADDR = {%- if customer and customer.default_address -%}
+    {
+      "city":     {{ customer.default_address.city     | json }},
+      "province": {{ customer.default_address.province | json }},
+      "address1": {{ customer.default_address.address1 | json }}
+    }
+  {%- else -%}
+    null
+  {%- endif -%};
+  var LOGGED_IN = {{ customer | json | default: 'null' }} !== null;
+
+  /* Convierte centavos a string COP */
+  function money(centavos) {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency', currency: 'COP', minimumFractionDigits: 0
+    }).format(centavos / 100);
+  }
+
+  function barColor(pct) {
+    if (pct >= 100) return '#28a745';
+    if (pct >= 70)  return '#5cb85c';
+    if (pct >= 45)  return '#d4a017';
+    if (pct >= 20)  return '#f0ad4e';
+    return '#dc3545';
+  }
+
+  function applyFreeShip(total) {
+    var isCali = ADDR && (ADDR.city || '').toLowerCase().indexOf('cali') !== -1;
+
+    var caliBar = document.getElementById('CartPage-FreeShip-Cali-Bar');
+    var natBar  = document.getElementById('CartPage-FreeShip-Nat-Bar');
+
+    /*
+      FIX: mostrar solo la barra correcta, ocultar la otra.
+      Ambas parten con display:none en el HTML, así no hay parpadeo
+      de doble barra durante la carga inicial ni al actualizar.
+    */
+    if (caliBar) caliBar.style.display = isCali ? '' : 'none';
+    if (natBar)  natBar.style.display  = isCali ? 'none' : '';
+
+    var thresh = isCali ? CALI_FREE : NAT_FREE;
+    var fill   = document.getElementById(isCali ? 'CartPage-FreeShip-Cali-Fill' : 'CartPage-FreeShip-Nat-Fill');
+    var text   = document.getElementById(isCali ? 'CartPage-FreeShip-Cali-Text' : 'CartPage-FreeShip-Nat-Text');
+    if (!fill) return;
+
+    var p = Math.min(100, (total / thresh) * 100);
+    fill.style.width = p + '%';
+    /*
+      FIX: cancelar el linear-gradient del CSS con backgroundImage = 'none'
+      antes de aplicar el color sólido. Sin esto, el gradient tiene mayor
+      especificidad y el color dinámico de barColor() no se ve.
+    */
+    fill.style.backgroundImage = 'none';
+    fill.style.background = barColor(p);
+    if (text) text.textContent = Math.round(p) + '%';
+  }
+
+  function row(name, price, isFree) {
+    return '<div class="ha-shiprates__item"><span class="ha-shiprates__name">' + name + '</span>'
+      + '<span class="ha-shiprates__price' + (isFree ? ' ha-shiprates__price--free' : '') + '">' + price + '</span></div>';
+  }
+  function tip(msg) {
+    return '<div class="ha-shiprates__item ha-shiprates__item--tip"><span class="ha-shiprates__name">' + msg + '</span></div>';
+  }
+
+  function applyRates(total) {
+    var list = document.getElementById('CartPage-ShipRates-List');
+    var note = document.getElementById('CartPage-ShipRates-Addr');
+    if (!list) return;
+
+    if (!ADDR) {
+      list.innerHTML = LOGGED_IN
+        ? '<span class="ha-shiprates__msg">Agrega una dirección en tu cuenta para ver las opciones.</span>'
+        : '<span class="ha-shiprates__msg">Inicia sesión para ver las opciones de envío.</span>';
+      if (note) note.innerHTML = '';
+      return;
+    }
+
+    if (total === 0) {
+      list.innerHTML = '<span class="ha-shiprates__msg">Añade productos para ver las opciones de envío.</span>';
+      if (note) note.innerHTML = '';
+      return;
+    }
+
+    var isCali = (ADDR.city || '').toLowerCase().indexOf('cali') !== -1;
+    var html;
+
+    if (isCali) {
+      html = total >= CALI_FREE
+        ? row('Envíos a Cali · 1-2 días hábiles', 'GRATIS', true)
+        : row('Envíos a Cali · 1-2 días hábiles', money(CALI_RATE), false)
+          + tip('Agrega ' + money(CALI_FREE - total) + ' más para envío gratis a Cali');
+    } else {
+      html = total >= NAT_FREE
+        ? row('Envío nacional · 5-8 días hábiles', 'GRATIS', true)
+        : row('Envío nacional · 5-8 días hábiles', money(NAT_RATE), false)
+          + tip('Agrega ' + money(NAT_FREE - total) + ' más para envío gratis nacional');
+    }
+
+    list.innerHTML = html;
+
+    if (note) {
+      note.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+        + ADDR.address1 + ', ' + ADDR.city + ', ' + ADDR.province;
+    }
+  }
+
+  function refresh() {
+    var now = Date.now();
+    if (_fetching || (now - _lastFetch) < DEBOUNCE_MS) return;
+    _fetching = true; _lastFetch = now;
+    fetch('/cart.js', { credentials: 'same-origin' })
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(cart) {
+        applyFreeShip(cart.total_price);
+        applyRates(cart.total_price);
+      })
+      .catch(function(err) {
+        console.warn('[CartPage]', err.message);
+        var list = document.getElementById('CartPage-ShipRates-List');
+        if (list) list.innerHTML = '<span class="ha-shiprates__err">No se pudieron calcular las tarifas.</span>';
+      })
+      .finally(function() { _fetching = false; });
+  }
+
+  function boot() {
+    var old = document.getElementById('cp-free-shipping-widget');
+    if (old) old.parentNode.removeChild(old);
+    refresh();
+    if (typeof subscribe === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
+      subscribe(PUB_SUB_EVENTS.cartUpdate, function() { setTimeout(refresh, 400); });
+    }
+  }
+
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', boot); }
+  else { boot(); }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-footer.name",
+  "class": "cart__footer-wrapper",
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:sections.all.colors.label", "default": "scheme-1" },
+    { "type": "header", "content": "t:sections.all.padding.section_padding_heading" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_top", "default": 40 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_bottom", "default": 40 }
+  ],
+  "blocks": [
+    { "type": "subtotal", "name": "t:sections.main-cart-footer.blocks.subtotal.name", "limit": 1 },
+    { "type": "buttons", "name": "t:sections.main-cart-footer.blocks.buttons.name", "limit": 1 },
+    { "type": "@app" }
+  ]
+}
+{% endschema %}

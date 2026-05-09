@@ -1,0 +1,948 @@
+<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-cart-notification.css' | asset_url }}" media="print" onload="this.media='all'">
+
+{%- if settings.predictive_search_enabled -%}
+  <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+
+{%- if section.settings.menu_type_desktop == 'mega' -%}
+  <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ha-white:        #ffffff;
+    --ha-off-white:    #f8f7f4;
+    --ha-charcoal:     #1a1a1a;
+    --ha-mid:          #4a4a4a;
+    --ha-light:        #e8e4df;
+    --ha-accent-red:   #c0392b;
+    --ha-accent-green: #27ae60;
+    --ha-accent-gold:  #d4a017;
+    --ha-border:       rgba(26,26,26,0.10);
+    --ha-shadow-sm:    0 2px 12px rgba(26,26,26,0.08);
+    --ha-shadow-md:    0 8px 32px rgba(26,26,26,0.12);
+    --ha-blur:         saturate(180%) blur(18px);
+    --ha-radius:       6px;
+    --ha-transition:   0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    --ha-font-body:    'DM Sans', sans-serif;
+    --ha-font-display: 'Playfair Display', serif;
+    --header-height:   60px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* ── ANNOUNCEMENT ── */
+  .ha-announcement {
+    background: var(--ha-charcoal);
+    color: var(--ha-white);
+    padding: 9px 0;
+    position: relative;
+    z-index: 200;
+    overflow: hidden;
+    width: 100%;
+  }
+  /*
+    SIN animación CSS aquí.
+    JS aplica transform: translateX() frame a frame con rAF.
+    El track crece horizontalmente tanto como necesite (flex + nowrap).
+  */
+  .ha-announcement__track {
+    display: flex;
+    white-space: nowrap;
+    will-change: transform;
+  }
+  .ha-announcement__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding-right: 4rem;
+    flex-shrink: 0;
+    color: var(--ha-white);
+    font-family: var(--ha-font-body);
+    font-size: 0.86rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    user-select: none;
+  }
+  .ha-announcement__item::after {
+    content: '✦';
+    font-size: 0.55rem;
+    opacity: 0.45;
+    margin-left: -2.5rem;
+    flex-shrink: 0;
+  }
+
+  /* ── STICKY HEADER ── */
+  .ha-header-outer {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.82);
+    -webkit-backdrop-filter: var(--ha-blur);
+    backdrop-filter: var(--ha-blur);
+    border-bottom: 1px solid var(--ha-border);
+    box-shadow: var(--ha-shadow-sm);
+    transition: background var(--ha-transition), box-shadow var(--ha-transition);
+    font-family: var(--ha-font-body);
+    animation: ha-slide-down 0.5s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  .ha-header-outer.scrolled {
+    background: rgba(255,255,255,0.96);
+    box-shadow: var(--ha-shadow-md);
+  }
+  @keyframes ha-slide-down {
+    from { opacity:0; transform:translateY(-8px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── HEADER GRID ── */
+  .ha-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    height: var(--header-height);
+  }
+
+  /* ── LOGO ── */
+  .ha-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+    gap: 0.65rem;
+  }
+  .ha-logo__img {
+    height: 30px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+  .ha-logo__wordmark {
+    font-family: var(--ha-font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ha-charcoal);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .ha-logo__wordmark span {
+    display: block;
+    font-family: var(--ha-font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ha-mid);
+    margin-top: 2px;
+  }
+
+  /* ── DESKTOP NAV ── */
+  .ha-nav {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    margin: 0; padding: 0;
+    gap: 0.15rem;
+  }
+  @media (max-width: 768px) { 
+    .ha-nav { display: none; } 
+    .ha-header__icons { gap: 12px; }
+    .ha-search-modal { width: 95vw; max-width: 400px; }
+    .ha-mobile-drawer__panel { width: min(280px, 85vw); }
+  }
+  
+  @media (min-width: 768px) { 
+    .ha-nav { display: flex; } 
+    .ha-hamburger { display: none; }
+    .ha-mobile-drawer { display: none; }
+  }
+  
+  @media (min-width: 990px) { .ha-cta-btn { display:flex; } }
+  
+  @media (max-width: 989px) { .ha-cta-btn { display: none; } }
+  
+  .ha-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.85rem;
+    font-family: var(--ha-font-body);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ha-charcoal);
+    text-decoration: none;
+    border-radius: var(--ha-radius);
+    transition: background var(--ha-transition);
+    white-space: nowrap;
+    position: relative;
+  }
+  .ha-nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; left: 0.85rem; right: 0.85rem;
+    height: 1.5px; border-radius: 2px;
+    transform: scaleX(0); transform-origin: left;
+    transition: transform var(--ha-transition);
+  }
+  .ha-nav__link:hover::after,
+  .ha-nav__link.active::after { transform: scaleX(1); }
+  .ha-nav__link:hover { background: var(--ha-off-white); }
+
+  .ha-nav__link--sports  { color: var(--ha-accent-red); }
+  .ha-nav__link--sports::after  { background: var(--ha-accent-red); }
+  .ha-nav__link--sports:hover   { background: rgba(192,57,43,0.06); }
+  .ha-nav__link--america { color: var(--ha-accent-green); }
+  .ha-nav__link--america::after { background: var(--ha-accent-green); }
+  .ha-nav__link--america:hover  { background: rgba(39,174,96,0.06); }
+  .ha-nav__link--nutrivita{ color: var(--ha-accent-gold); }
+  .ha-nav__link--nutrivita::after{ background: var(--ha-accent-gold); }
+  .ha-nav__link--nutrivita:hover { background: rgba(212,160,23,0.06); }
+
+  .ha-nav__badge {
+    width: 6px; height: 6px;
+    border-radius: 50%; flex-shrink: 0;
+    display: inline-flex;
+  }
+  .ha-nav__link--sports .ha-nav__badge   { background: var(--ha-accent-red); }
+  .ha-nav__link--america .ha-nav__badge  { background: var(--ha-accent-green); }
+  .ha-nav__link--nutrivita .ha-nav__badge{ background: var(--ha-accent-gold); }
+  .ha-nav__divider {
+    width: 1px; height: 20px;
+    background: var(--ha-border);
+    margin: 0 0.4rem; flex-shrink: 0;
+  }
+
+  /* ── ACTIONS ── */
+  .ha-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    justify-content: flex-end;
+  }
+  .ha-icon-btn {
+    display: flex; align-items: center; justify-content: center;
+    min-width: 40px; height: 40px;
+    border-radius: var(--ha-radius);
+    text-decoration: none;
+    color: var(--ha-charcoal);
+    background: transparent; border: none;
+    cursor: pointer;
+    transition: background var(--ha-transition);
+    position: relative; flex-shrink: 0;
+    padding: 0 0.5rem;
+  }
+  .ha-icon-btn:hover { background: var(--ha-off-white); }
+  .ha-icon-btn svg { width:18px; height:18px; stroke-width:1.8; fill:none; stroke:currentColor; }
+  .ha-customer-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-left: 0.35rem;
+    white-space: nowrap;
+  }
+  .ha-cart-count {
+    position: absolute; top:5px; right:5px;
+    min-width:16px; height:16px;
+    background: var(--ha-accent-green);
+    color: var(--ha-white);
+    font-family: var(--ha-font-body); font-size:0.6rem; font-weight:600;
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    padding:0 3px; line-height:1;
+    pointer-events:none;
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .ha-cart-count.visible { transform: scale(1); }
+
+  .ha-cta-btn {
+    display: none;
+    align-items: center; gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    background: var(--ha-charcoal); color: var(--ha-white);
+    font-family: var(--ha-font-body); font-size:0.85rem; font-weight:600;
+    letter-spacing:0.04em;
+    text-decoration: none; border-radius: var(--ha-radius);
+    border: 1.5px solid var(--ha-charcoal);
+    transition: background var(--ha-transition), color var(--ha-transition), transform 0.15s;
+    white-space: nowrap; margin-left: 0.3rem;
+  }
+  .ha-cta-btn:hover { background:transparent; color:var(--ha-charcoal); transform:translateY(-1px); }
+  @media (min-width:990px) { .ha-cta-btn { display:flex; } }
+
+  /* ── HAMBURGER ── */
+  .ha-hamburger {
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    gap:4.5px; width:40px; height:40px;
+    background:transparent; border:none; border-radius:var(--ha-radius);
+    cursor:pointer; padding:8px;
+    transition:background var(--ha-transition); flex-shrink:0;
+  }
+  .ha-hamburger:hover { background:var(--ha-off-white); }
+  .ha-hamburger__line {
+    display:block; width:20px; height:1.5px;
+    background:var(--ha-charcoal); border-radius:2px;
+    transition: transform var(--ha-transition), opacity var(--ha-transition), width var(--ha-transition);
+    transform-origin:center;
+  }
+  .ha-hamburger__line:nth-child(2) { width:14px; }
+  .ha-hamburger[aria-expanded="true"] .ha-hamburger__line:nth-child(1) { transform:translateY(6px) rotate(45deg); width:20px; }
+  .ha-hamburger[aria-expanded="true"] .ha-hamburger__line:nth-child(2) { opacity:0; transform:scaleX(0); }
+  .ha-hamburger[aria-expanded="true"] .ha-hamburger__line:nth-child(3) { transform:translateY(-6px) rotate(-45deg); width:20px; }
+  @media (min-width:768px) { .ha-hamburger { display:none; } }
+
+  /* ── MOBILE DRAWER ── */
+  .ha-mobile-drawer {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    z-index:99; pointer-events:none;
+  }
+  .ha-mobile-drawer__backdrop {
+    position:absolute; inset:0;
+    background:rgba(26,26,26,0.45);
+    opacity:0; transition:opacity var(--ha-transition);
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  }
+  .ha-mobile-drawer__panel {
+    position:absolute; top:0; left:0;
+    width:min(320px,88vw); height:100%;
+    background:var(--ha-white); box-shadow:var(--ha-shadow-md);
+    transform:translateX(-100%); transition:transform var(--ha-transition);
+    display:flex; flex-direction:column; overflow-y:auto;
+  }
+  .ha-mobile-drawer.open { pointer-events:none; }
+  .ha-mobile-drawer.open .ha-mobile-drawer__backdrop { pointer-events:auto; opacity:1; }
+  .ha-mobile-drawer.open .ha-mobile-drawer__panel    { pointer-events:auto; transform:translateX(0); }
+
+  .ha-drawer-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1rem 1.25rem; border-bottom:1px solid var(--ha-border); flex-shrink:0;
+  }
+  .ha-drawer-close {
+    display:flex; align-items:center; justify-content:center;
+    width:36px; height:36px;
+    background:var(--ha-off-white); border:none; border-radius:var(--ha-radius);
+    cursor:pointer; transition:background var(--ha-transition);
+  }
+  .ha-drawer-close:hover { background:var(--ha-light); }
+  .ha-drawer-close svg { width:16px; height:16px; stroke:var(--ha-charcoal); stroke-width:2; fill:none; }
+
+  .ha-drawer-nav { padding:1rem 0; flex:1; }
+  .ha-drawer-section-label {
+    font-family:var(--ha-font-body); font-size:0.65rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--ha-mid); padding:0.75rem 1.25rem 0.3rem; opacity:0.7;
+  }
+  .ha-drawer-link {
+    display:flex; align-items:center; gap:0.75rem;
+    padding:0.75rem 1.25rem;
+    font-family:var(--ha-font-body); font-size:0.9rem; font-weight:400;
+    color:var(--ha-charcoal); text-decoration:none;
+    transition:background var(--ha-transition), padding-left var(--ha-transition);
+    border-left:2.5px solid transparent;
+  }
+  .ha-drawer-link:hover { background:var(--ha-off-white); padding-left:1.6rem; }
+  .ha-drawer-link--sports   { border-left-color:var(--ha-accent-red); }
+  .ha-drawer-link--america  { border-left-color:var(--ha-accent-green); }
+  .ha-drawer-link--nutrivita{ border-left-color:var(--ha-accent-gold); }
+  .ha-drawer-link__dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .ha-drawer-link--sports .ha-drawer-link__dot   { background:var(--ha-accent-red); }
+  .ha-drawer-link--america .ha-drawer-link__dot  { background:var(--ha-accent-green); }
+  .ha-drawer-link--nutrivita .ha-drawer-link__dot{ background:var(--ha-accent-gold); }
+
+  .ha-drawer-footer {
+    padding:1.25rem; border-top:1px solid var(--ha-border);
+    display:flex; gap:0.6rem; flex-shrink:0;
+  }
+  .ha-drawer-footer a {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:0.4rem;
+    padding:0.6rem; font-family:var(--ha-font-body); font-size:0.78rem; font-weight:500;
+    color:var(--ha-charcoal); text-decoration:none;
+    background:var(--ha-off-white); border-radius:var(--ha-radius);
+    border:1px solid var(--ha-border); transition:background var(--ha-transition);
+  }
+  .ha-drawer-footer a:hover { background:var(--ha-light); }
+  .ha-drawer-footer a svg { width:16px; height:16px; stroke:currentColor; stroke-width:1.8; fill:none; }
+
+  /* ── SEARCH OVERLAY ── */
+  .ha-search-overlay {
+    position:fixed; inset:0; z-index:150;
+    display:flex; align-items:flex-start; justify-content:center;
+    padding-top:80px;
+    background:rgba(26,26,26,0.5);
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    opacity:0; pointer-events:none; transition:opacity var(--ha-transition);
+  }
+  .ha-search-overlay.open { opacity:1; pointer-events:all; }
+  .ha-search-box {
+    background:var(--ha-white); border-radius:12px;
+    box-shadow:var(--ha-shadow-md); width:min(600px,92vw);
+    overflow:hidden; transform:translateY(-12px); transition:transform var(--ha-transition);
+  }
+  .ha-search-overlay.open .ha-search-box { transform:translateY(0); }
+  .ha-search-inner { display:flex; align-items:center; padding:0 1rem; gap:0.6rem; }
+  .ha-search-inner svg { width:18px; height:18px; stroke:var(--ha-mid); stroke-width:1.8; fill:none; flex-shrink:0; }
+  .ha-search-input {
+    flex:1; border:none; outline:none;
+    font-family:var(--ha-font-body); font-size:0.95rem; font-weight:400;
+    color:var(--ha-charcoal); background:transparent; padding:1rem 0; line-height:1.4;
+  }
+  .ha-search-input::placeholder { color:var(--ha-mid); opacity:0.6; }
+  .ha-search-close {
+    background:var(--ha-off-white); border:none; border-radius:4px;
+    width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0;
+    font-family:var(--ha-font-body); font-size:0.68rem; font-weight:600;
+    letter-spacing:0.04em; color:var(--ha-mid);
+    transition:background var(--ha-transition);
+  }
+  .ha-search-close:hover { background:var(--ha-light); }
+
+  /* ── DAWN COMPAT ── */
+  .header-wrapper { all:unset; }
+  .section-header { position:sticky; top:0; z-index:100; }
+
+  /* ── SKIP ── */
+  .ha-skip { position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
+  .ha-skip:focus {
+    position:fixed; top:0; left:0; width:auto; height:auto;
+    padding:0.5rem 1rem; background:var(--ha-charcoal); color:var(--ha-white);
+    font-family:var(--ha-font-body); font-size:0.85rem;
+    z-index:9999; border-radius:0 0 var(--ha-radius) 0;
+  }
+</style>
+
+{%- liquid
+  for block in section.blocks
+    if block.type == '@app'
+      assign has_app_block = true
+    endif
+  endfor
+-%} 
+
+<script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+
+<a class="ha-skip" href="#MainContent">Skip to content</a>
+
+<!-- ================================================================
+     ANNOUNCEMENT BAR
+     HTML: UN SOLO span fuente. JS mide su ancho real y lo clona
+     las veces necesarias para llenar la pantalla. El loop se hace
+     restando exactamente itemWidth cuando offset >= itemWidth,
+     garantizando continuidad perfecta sin salto.
+================================================================ -->
+<div class="ha-announcement" id="ha-announcement" aria-label="Información de la tienda">
+  <div class="ha-announcement__track" id="ha-ann-track">
+    <span class="ha-announcement__item" id="ha-ann-source">
+      Envío GRATIS por Compras mayores a $100.000 en Cali y $150.000 a nivel nacional
+    </span>
+  </div>
+</div>
+
+<!-- ================================================================
+     STICKY HEADER
+================================================================ -->
+<div class="ha-header-outer" id="ha-header" role="navigation" aria-label="Site header">
+  <div class="ha-header">
+
+    <a href="{{ routes.root_url }}" class="ha-logo" aria-label="{{ shop.name }}">
+      {%- if settings.logo != blank -%}
+        {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+        {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+        {{ settings.logo | image_url: width: 400 | image_tag:
+          class: 'ha-logo__img',
+          width: settings.logo_width,
+          height: logo_height,
+          alt: logo_alt,
+          preload: true
+        }}
+      {%- else -%}
+        <span class="ha-logo__wordmark">
+          {{ shop.name }}<span class="ha-logo__wordmark-text">Nutrición &amp; Bienestar</span>
+        </span>
+      {%- endif -%}
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul class="ha-nav" role="list">
+        <li>
+          <a href="/collections/healthy-america"
+             class="ha-nav__link ha-nav__link--america{% if request.path contains '/collections/healthy-america' %} active{% endif %}"
+             {% if request.path contains '/collections/healthy-america' %}aria-current="page"{% endif %}>
+            <span class="ha-nav__badge" aria-hidden="true"></span>Healthy America
+          </a>
+        </li>
+        <li>
+          <a href="/collections/healthy-sports"
+             class="ha-nav__link ha-nav__link--sports{% if request.path contains '/collections/healthy-sports' %} active{% endif %}"
+             {% if request.path contains '/collections/healthy-sports' %}aria-current="page"{% endif %}>
+            <span class="ha-nav__badge" aria-hidden="true"></span>Healthy Sports
+          </a>
+        </li>
+        <li>
+          <a href="/collections/nutrivita"
+             class="ha-nav__link ha-nav__link--nutrivita{% if request.path contains '/collections/nutrivita' %} active{% endif %}"
+             {% if request.path contains '/collections/nutrivita' %}aria-current="page"{% endif %}>
+            <span class="ha-nav__badge" aria-hidden="true"></span>Nutrivita
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="ha-header-actions">
+      <button class="ha-icon-btn" id="ha-search-toggle" aria-label="Buscar" aria-expanded="false" aria-controls="ha-search-overlay">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
+           class="ha-icon-btn small-hide"
+           aria-label="{%- if customer -%}Mi cuenta{%- else -%}Iniciar sesión{%- endif -%}"
+           rel="nofollow">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg>
+          {%- if customer -%}
+            <span class="ha-customer-name" aria-hidden="true">{{ customer.first_name | default: customer.name | default: 'Mi cuenta' }}</span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}{%- when '@app' -%}{% render block %}{%- endcase -%}
+      {%- endfor -%}
+
+      <a href="{{ routes.cart_url }}" class="ha-icon-btn" id="cart-icon-bubble" aria-label="Carrito ({{ cart.item_count }} items)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        {%- if cart.item_count > 0 -%}
+          <span class="ha-cart-count visible" aria-hidden="true">{{ cart.item_count }}</span>
+        {%- else -%}
+          <span class="ha-cart-count" aria-hidden="true">0</span>
+        {%- endif -%}
+      </a>
+
+      <a href="/collections/all" class="ha-cta-btn">
+        Ver productos
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+      <button class="ha-hamburger" id="ha-menu-toggle" aria-label="Menú" aria-expanded="false" aria-controls="ha-mobile-drawer">
+        <span class="ha-hamburger__line"></span>
+        <span class="ha-hamburger__line"></span>
+        <span class="ha-hamburger__line"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     MOBILE DRAWER
+================================================================ -->
+<div class="ha-mobile-drawer" id="ha-mobile-drawer" role="dialog" aria-label="Menú de navegación" aria-modal="true">
+  <div class="ha-mobile-drawer__backdrop" id="ha-drawer-backdrop"></div>
+  <div class="ha-mobile-drawer__panel">
+    <div class="ha-drawer-head">
+      <a href="{{ routes.root_url }}" class="ha-logo" aria-label="{{ shop.name }}">
+        {%- if settings.logo != blank -%}
+          {{ settings.logo | image_url: width: 200 | image_tag: class: 'ha-logo__img', width: 100, alt: shop.name }}
+        {%- else -%}
+          <span class="ha-logo__wordmark">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+      <button class="ha-drawer-close" id="ha-drawer-close" aria-label="Cerrar menú">
+        <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <nav class="ha-drawer-nav" aria-label="Mobile navigation">
+      <p class="ha-drawer-section-label">Nuestras marcas</p>
+      <a href="/collections/healthy-america" class="ha-drawer-link ha-drawer-link--america{% if request.path contains '/collections/healthy-america' %} active{% endif %}">
+        <span class="ha-drawer-link__dot" aria-hidden="true"></span>Healthy America
+      </a>
+      <a href="/collections/healthy-sports" class="ha-drawer-link ha-drawer-link--sports{% if request.path contains '/collections/healthy-sports' %} active{% endif %}">
+        <span class="ha-drawer-link__dot" aria-hidden="true"></span>Healthy Sports
+      </a>
+      <a href="/collections/nutrivita" class="ha-drawer-link ha-drawer-link--nutrivita{% if request.path contains '/collections/nutrivita' %} active{% endif %}">
+        <span class="ha-drawer-link__dot" aria-hidden="true"></span>Nutrivita
+      </a>
+    </nav>
+    <div class="ha-drawer-footer">
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" rel="nofollow">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg>
+          {%- if customer -%}Mi cuenta{%- else -%}Ingresar{%- endif -%}
+        </a>
+      {%- endif -%}
+      <a href="{{ routes.cart_url }}">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Carrito{%- if cart.item_count > 0 -%} ({{ cart.item_count }}){%- endif -%}
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     SEARCH OVERLAY
+================================================================ -->
+<div class="ha-search-overlay" id="ha-search-overlay" role="dialog" aria-label="Búsqueda" aria-modal="true">
+  <div class="ha-search-box">
+    <form action="{{ routes.search_url }}" method="get" role="search">
+      <div class="ha-search-inner">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" name="q" class="ha-search-input"
+          placeholder="Buscar productos…" autocomplete="off"
+          aria-label="Buscar en la tienda" id="ha-search-input">
+        <button type="button" class="ha-search-close" id="ha-search-close" aria-label="Cerrar búsqueda">ESC</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{%- if settings.cart_type == "notification" -%}
+  {%- render 'cart-notification', color_scheme: section.settings.color_scheme, desktop_menu_type: section.settings.menu_type_desktop -%}
+{%- endif -%}
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================================================================
+     MARQUEE CONTINUO SIN SALTO
+     ─────────────────────────────────────────────────────────────────
+     La raíz del problema con CSS keyframes + translateX(-50%):
+       El porcentaje -50% asume que los dos "mitades" del track son
+       EXACTAMENTE iguales en píxeles. Sub-pixel rendering, zoom del
+       navegador o diferencias de fuente rompen esa igualdad y
+       producen el micro-salto visible al hacer el reset.
+
+     Solución aquí:
+       • Solo hay UN span "fuente" en el HTML.
+       • Después de cargar la fuente, medimos su offsetWidth real → itemW.
+       • Clonamos ese span hasta tener suficientes copias para cubrir
+         la pantalla × 2 (nunca quedará un hueco).
+       • Cada frame: offset += speed.
+       • Cuando offset >= itemW → offset -= itemW   ← RESET EXACTO.
+         Este valor es el mismo que medimos, no un porcentaje.
+         El primer clon reemplaza visualmente al original sin diferencia
+         de posición → cero salto.
+  ================================================================ */
+  function initMarquee() {
+    var track  = document.getElementById('ha-ann-track');
+    var source = document.getElementById('ha-ann-source');
+    if (!track || !source) return;
+
+    var speed  = 0.65;   // px / frame  (~39 px/s a 60 fps)
+    var offset = 0;
+    var itemW  = 0;
+    var raf    = null;
+    var paused = false;
+
+    function build() {
+      itemW = source.offsetWidth;
+
+      // Si la fuente no cargó aún, offsetWidth puede ser 0 → reintentar
+      if (itemW === 0) {
+        requestAnimationFrame(build);
+        return;
+      }
+
+      var containerW = track.parentElement.offsetWidth || window.innerWidth;
+
+      // Cuántos clones necesitamos para cubrir containerW × 2 + margen
+      var needed = Math.ceil((containerW * 2) / itemW) + 3;
+
+      // Eliminar clones anteriores (por si se recalcula en resize)
+      Array.prototype.forEach.call(
+        track.querySelectorAll('[aria-hidden="true"]'),
+        function (el) { track.removeChild(el); }
+      );
+
+      for (var i = 0; i < needed; i++) {
+        var clone = source.cloneNode(true);
+        clone.removeAttribute('id');
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+      }
+
+      offset = 0;
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(tick);
+    }
+
+    function tick() {
+      if (!paused) {
+        offset += speed;
+
+        // Reset EXACTO: cuando avanzamos un itemW completo,
+        // retrocedemos ese mismo valor. El siguiente clon ya
+        // está justo donde estaba el anterior → sin salto.
+        if (offset >= itemW) {
+          offset -= itemW;
+        }
+
+        track.style.transform = 'translateX(' + (-offset) + 'px)';
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    // Pausar al hover (accesibilidad / comodidad de lectura)
+    var bar = document.getElementById('ha-announcement');
+    if (bar) {
+      bar.addEventListener('mouseenter', function () { paused = true;  });
+      bar.addEventListener('mouseleave', function () { paused = false; });
+    }
+
+    // Recalcular si el viewport cambia de tamaño
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(build, 250);
+    }, { passive: true });
+
+    // Esperar a que la fuente esté lista antes de medir
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(build);
+    } else {
+      setTimeout(build, 350); // fallback Safari antiguo
+    }
+  }
+
+  /* ================================================================
+     STICKY SCROLL
+  ================================================================ */
+  var headerEl = document.getElementById('ha-header');
+  var ticking  = false;
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      requestAnimationFrame(function () {
+        if (headerEl) headerEl.classList.toggle('scrolled', window.scrollY > 40);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  /* ================================================================
+     MOBILE DRAWER
+  ================================================================ */
+  var menuToggle  = document.getElementById('ha-menu-toggle');
+  var drawer      = document.getElementById('ha-mobile-drawer');
+  var drawerClose = document.getElementById('ha-drawer-close');
+  var backdrop    = document.getElementById('ha-drawer-backdrop');
+  var body        = document.body;
+
+  function openDrawer()  {
+    drawer.classList.add('open');
+    menuToggle.setAttribute('aria-expanded', 'true');
+    body.style.overflow = 'hidden';
+    if (drawerClose) drawerClose.focus();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    body.style.overflow = '';
+    if (menuToggle) menuToggle.focus();
+  }
+  if (menuToggle)  menuToggle.addEventListener('click', function() {
+    drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+  });
+  if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+  if (backdrop)    backdrop.addEventListener('click', closeDrawer);
+
+  /* ================================================================
+     SEARCH OVERLAY
+  ================================================================ */
+  var searchToggle  = document.getElementById('ha-search-toggle');
+  var searchOverlay = document.getElementById('ha-search-overlay');
+  var searchClose   = document.getElementById('ha-search-close');
+  var searchInput   = document.getElementById('ha-search-input');
+
+  function openSearch() {
+    searchOverlay.classList.add('open');
+    if (searchToggle) searchToggle.setAttribute('aria-expanded', 'true');
+    body.style.overflow = 'hidden';
+    setTimeout(function () { if (searchInput) searchInput.focus(); }, 80);
+  }
+  function closeSearch() {
+    searchOverlay.classList.remove('open');
+    if (searchToggle) searchToggle.setAttribute('aria-expanded', 'false');
+    body.style.overflow = '';
+    if (searchToggle) searchToggle.focus();
+  }
+  if (searchToggle)  searchToggle.addEventListener('click', openSearch);
+  if (searchClose)   searchClose.addEventListener('click', closeSearch);
+  if (searchOverlay) searchOverlay.addEventListener('click', function (e) {
+    if (e.target === searchOverlay) closeSearch();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (drawer      && drawer.classList.contains('open'))        closeDrawer();
+    if (searchOverlay && searchOverlay.classList.contains('open')) closeSearch();
+  });
+
+  /* ================================================================
+     CART COUNT BOUNCE-IN
+  ================================================================ */
+  var cartCount = document.querySelector('.ha-cart-count');
+  if (cartCount) setTimeout(function () { cartCount.classList.add('visible'); }, 600);
+
+  /* ================================================================
+     DAWN COMPAT: sticky-header custom element
+  ================================================================ */
+  if (!customElements.get('sticky-header')) {
+    customElements.define('sticky-header', class extends HTMLElement {
+      connectedCallback() {
+        this.header = document.querySelector('.section-header');
+        this.headerIsAlwaysSticky =
+          this.getAttribute('data-sticky-type') === 'always' ||
+          this.getAttribute('data-sticky-type') === 'reduce-logo-size';
+        this.headerBounds = {};
+        this.setHeaderHeight();
+        window.matchMedia('(max-width: 990px)').addEventListener('change', this.setHeaderHeight.bind(this));
+        if (this.headerIsAlwaysSticky && this.header)
+          this.header.classList.add('shopify-section-header-sticky');
+        this.currentScrollTop = 0;
+        this.preventReveal = false;
+        this.predictiveSearch = this.querySelector('predictive-search');
+        this.onScrollHandler = this.onScroll.bind(this);
+        this.hideHeaderOnScrollUp = () => this.preventReveal = true;
+        this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+        window.addEventListener('scroll', this.onScrollHandler, false);
+        this.createObserver();
+      }
+      setHeaderHeight() {
+        if (this.header)
+          document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);
+      }
+      disconnectedCallback() {
+        this.removeEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+        window.removeEventListener('scroll', this.onScrollHandler);
+      }
+      createObserver() {
+        const o = new IntersectionObserver((entries, obs) => {
+          this.headerBounds = entries[0].intersectionRect; obs.disconnect();
+        });
+        if (this.header) o.observe(this.header);
+      }
+      onScroll() {
+        const st = window.pageYOffset || document.documentElement.scrollTop;
+        if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
+        const bot = this.headerBounds.bottom || 0;
+        const top = this.headerBounds.top    || 0;
+        if (st > this.currentScrollTop && st > bot) {
+          this.header && this.header.classList.add('scrolled-past-header');
+          if (!this.preventHide) requestAnimationFrame(this.hide.bind(this));
+        } else if (st < this.currentScrollTop && st > bot) {
+          this.header && this.header.classList.add('scrolled-past-header');
+          if (!this.preventReveal) {
+            requestAnimationFrame(this.reveal.bind(this));
+          } else {
+            clearTimeout(this.isScrolling);
+            this.isScrolling = setTimeout(() => { this.preventReveal = false; }, 66);
+            requestAnimationFrame(this.hide.bind(this));
+          }
+        } else if (st <= top) {
+          this.header && this.header.classList.remove('scrolled-past-header');
+          requestAnimationFrame(this.reset.bind(this));
+        }
+        this.currentScrollTop = st;
+      }
+      hide()   { if (!this.headerIsAlwaysSticky && this.header) this.header.classList.add('shopify-section-header-hidden','shopify-section-header-sticky'); }
+      reveal() { if (!this.headerIsAlwaysSticky && this.header) { this.header.classList.add('shopify-section-header-sticky','animate'); this.header.classList.remove('shopify-section-header-hidden'); } }
+      reset()  { if (!this.headerIsAlwaysSticky && this.header) this.header.classList.remove('shopify-section-header-hidden','shopify-section-header-sticky','animate'); }
+    });
+  }
+
+  /* Arrancar marquee */
+  initMarquee();
+
+})();
+</script>
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if settings.logo %}"logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},{% endif %}
+    "sameAs": [
+      {{ settings.social_twitter_link | json }},{{ settings.social_facebook_link | json }},
+      {{ settings.social_pinterest_link | json }},{{ settings.social_instagram_link | json }},
+      {{ settings.social_tiktok_link | json }},{{ settings.social_tumblr_link | json }},
+      {{ settings.social_snapchat_link | json }},{{ settings.social_youtube_link | json }},
+      {{ settings.social_vimeo_link | json }}
+    ],
+    "url": {{ request.origin | append: page.url | json }}
+  }
+</script>
+
+{%- if request.page_type == 'index' -%}
+  {% assign potential_action_target = request.origin | append: routes.search_url | append: "?q={search_term_string}" %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {{ potential_action_target | json }},
+        "query-input": "required name=search_term_string"
+      },
+      "url": {{ request.origin | append: page.url | json }}
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "class": "section-header",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "select", "id": "logo_position", "options": [
+        { "value": "top-left",      "label": "t:sections.header.settings.logo_position.options__2.label" },
+        { "value": "top-center",    "label": "t:sections.header.settings.logo_position.options__3.label" },
+        { "value": "middle-left",   "label": "t:sections.header.settings.logo_position.options__1.label" },
+        { "value": "middle-center", "label": "t:sections.header.settings.logo_position.options__4.label" }
+      ], "default": "middle-left", "label": "t:sections.header.settings.logo_position.label", "info": "t:sections.header.settings.logo_help.content" },
+    { "type": "select", "id": "mobile_logo_position", "options": [
+        { "value": "center", "label": "t:sections.header.settings.mobile_logo_position.options__1.label" },
+        { "value": "left",   "label": "t:sections.header.settings.mobile_logo_position.options__2.label" }
+      ], "default": "center", "label": "t:sections.header.settings.mobile_logo_position.label" },
+    { "type": "link_list", "id": "menu", "default": "main-menu", "label": "t:sections.header.settings.menu.label" },
+    { "type": "select", "id": "menu_type_desktop", "options": [
+        { "value": "dropdown", "label": "t:sections.header.settings.menu_type_desktop.options__1.label" },
+        { "value": "mega",     "label": "t:sections.header.settings.menu_type_desktop.options__2.label" },
+        { "value": "drawer",   "label": "t:sections.header.settings.menu_type_desktop.options__3.label" }
+      ], "default": "dropdown", "label": "t:sections.header.settings.menu_type_desktop.label" },
+    { "type": "select", "id": "sticky_header_type", "options": [
+        { "value": "none",             "label": "t:sections.header.settings.sticky_header_type.options__1.label" },
+        { "value": "on-scroll-up",     "label": "t:sections.header.settings.sticky_header_type.options__2.label" },
+        { "value": "always",           "label": "t:sections.header.settings.sticky_header_type.options__3.label" },
+        { "value": "reduce-logo-size", "label": "t:sections.header.settings.sticky_header_type.options__4.label" }
+      ], "default": "on-scroll-up", "label": "t:sections.header.settings.sticky_header_type.label" },
+    { "type": "checkbox", "id": "show_line_separator", "default": true, "label": "t:sections.header.settings.show_line_separator.label" },
+    { "type": "header",   "content": "t:sections.header.settings.header__1.content" },
+    { "type": "color_scheme", "id": "color_scheme",      "label": "t:sections.all.colors.label",                        "default": "scheme-1" },
+    { "type": "color_scheme", "id": "menu_color_scheme", "label": "t:sections.header.settings.menu_color_scheme.label", "default": "scheme-1" },
+    { "type": "header",   "content": "t:sections.header.settings.header__utilities.content" },
+    { "type": "checkbox", "id": "enable_country_selector",  "default": true, "label": "t:sections.header.settings.enable_country_selector.label",  "info": "t:sections.header.settings.enable_country_selector.info" },
+    { "type": "checkbox", "id": "enable_language_selector", "default": true, "label": "t:sections.header.settings.enable_language_selector.label", "info": "t:sections.header.settings.enable_language_selector.info" },
+    { "type": "checkbox", "id": "enable_customer_avatar",   "default": true, "label": "t:sections.header.settings.enable_customer_avatar.label",   "info": "t:sections.header.settings.enable_customer_avatar.info" },
+    { "type": "header", "content": "t:sections.all.spacing" },
+    { "type": "range", "id": "margin_bottom",  "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.header.settings.margin_bottom.label", "default": 0 },
+    { "type": "header", "content": "t:sections.all.padding.section_padding_heading" },
+    { "type": "range", "id": "padding_top",    "min": 0, "max": 36,  "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_top",    "default": 20 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 36,  "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_bottom", "default": 20 }
+  ],
+  "blocks": [{ "type": "@app" }]
+}
+{% endschema %}
